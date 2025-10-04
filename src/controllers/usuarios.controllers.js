@@ -31,6 +31,9 @@ export const traerUsuariosActivos = async (req, res) => {
   }
 };
 
+
+
+// borrado logico de un usuario
 export const borradoLogicoUsuario = async (req, res) => {
   try {
     const { idUsuario } = req.params;
