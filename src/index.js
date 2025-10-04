@@ -1,10 +1,10 @@
 import express from "express";
 import dotenv from "dotenv";
-import db from "./src/config/db.js";
+import db from "./config/db.js";
 
 // import de rutas
-import personasRoutes from "./src/routes/personas.routes.js";
-import usuariosRoutes from "./src/routes/usuarios.routes.js"
+import personasRoutes from "./routes/personas.routes.js";
+import usuariosRoutes from "./routes/usuarios.routes.js"
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
