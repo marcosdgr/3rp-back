@@ -7,8 +7,7 @@ import {
   traerPersonasActivas,
 } from "../controllers/personas.controllers.js";
 import {
-  //   validarActualizarPersona,
-  //   validarCrearPersona,
+
   validarPersona,
 } from "../middlewares/validacionesPersona.js";
 

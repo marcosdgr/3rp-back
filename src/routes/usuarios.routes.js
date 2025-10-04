@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { borradoLogicoUsuario, traerUsuarios } from "../controllers/usuarios.controllers.js";
+import { borradoLogicoUsuario, traerUsuarios, traerUsuariosActivos } from "../controllers/usuarios.controllers.js";
 
 const router = Router();
 
@@ -7,10 +7,11 @@ const router = Router();
 
 // metodos GET
 router.get("/", traerUsuarios);
+router.get("/activos", traerUsuariosActivos)
 
 // metodos PUT
 
-router.put ("/eliminar/:id", borradoLogicoUsuario)
+router.put ("/eliminar/:idUsuario", borradoLogicoUsuario)
 
 
 
