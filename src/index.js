@@ -7,6 +7,8 @@ import personasRoutes from "./routes/personas.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 
+
+
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
 

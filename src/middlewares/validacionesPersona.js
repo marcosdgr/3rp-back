@@ -1,18 +1,11 @@
 import { personaSchema } from "../models/persona.schema.js";
 
-// Middleware para validar datos al crear una persona 
-export const validarPersona = async (req, res, next) => {
-  try {
-    // Agregar idPersona para actualizaciones si existe en params
-    const datosAValidar = {
-      ...req.body,
-      ...(req.params.idPersona && { idPersona: req.params.idPersona })
-    };
+// Middleware SIMPLE para validar datos
+export const validarPersona = (req, res, next) => {
+  // Solo validar la estructura con Joi
+  const { error } = personaSchema.validate(req.body);
 
-    // Validar con validaciones externas (async)
-    await personaSchema.validateAsync(datosAValidar);
-    next();
-  } catch (error) {
+  if (error) {
     const errores = error.details.map((detail) => ({
       campo: detail.path[0],
       mensaje: detail.message,
@@ -23,4 +16,7 @@ export const validarPersona = async (req, res, next) => {
       errores,
     });
   }
+
+  // Si está bien, continuar
+  next();
 };

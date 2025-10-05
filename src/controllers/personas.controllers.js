@@ -58,6 +58,9 @@ export const crearPersona = async (req, res) => {
     // Obtengo el ID del usuario autenticado desde el token
     const idUsuarioCreador = req.user.idUsuario;
 
+    // Las validaciones de duplicados ya se realizaron en el middleware
+    // Proceder directamente a insertar
+
     const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
 
     db.query(
@@ -74,9 +77,33 @@ export const crearPersona = async (req, res) => {
       ],
       (error, results) => {
         if (error) {
-          console.error("Error al crear persona: ", error);
-          res.status(500).json({ message: "Error al crear persona" });
+          console.error("Error al crear persona:", error);
+
+          // Manejo SIMPLE de errores comunes
+          if (error.code === "ER_DUP_ENTRY") {
+            if (error.message.includes("DNI")) {
+              return res
+                .status(400)
+                .json({ message: "El DNI ya está registrado" });
+            }
+            if (error.message.includes("MailPersona")) {
+              return res
+                .status(400)
+                .json({ message: "El email ya está registrado" });
+            }
+            if (error.message.includes("TelefonoPersona")) {
+              return res
+                .status(400)
+                .json({ message: "El teléfono ya está registrado" });
+            }
+            return res
+              .status(400)
+              .json({ message: "Los datos ya están registrados" });
+          }
+
+          return res.status(500).json({ message: "Error al crear persona" });
         }
+
         res.status(201).json({
           message: "Persona creada exitosamente",
           idInsertado: results.insertId,
@@ -119,7 +146,33 @@ export const actualizarPersona = async (req, res) => {
       ],
       (error, results) => {
         if (error) {
-          console.error("Error al actualizar persona: ", error);
+          console.error("Error al actualizar persona:", error);
+
+          // Manejo SIMPLE de errores comunes para actualización
+          if (error.code === "ER_DUP_ENTRY") {
+            if (error.message.includes("DNI")) {
+              return res.status(400).json({
+                message: "El DNI ya está registrado por otra persona",
+              });
+            }
+            if (error.message.includes("MailPersona")) {
+              return res.status(400).json({
+                message: "El email ya está registrado por otra persona",
+              });
+            }
+            if (error.message.includes("TelefonoPersona")) {
+              return res.status(400).json({
+                message: "El teléfono ya está registrado por otra persona",
+              });
+            }
+            return res.status(400).json({
+              message: "Los datos ya están registrados por otra persona",
+            });
+          }
+
+          return res
+            .status(500)
+            .json({ message: "Error al actualizar persona" });
         }
 
         if (results.affectedRows === 0) {
