@@ -5,6 +5,7 @@ import {
   crearPersona,
   traerPersonas,
   traerPersonasActivas,
+  traerPersonasActivasPorTipo,
 } from "../controllers/personas.controllers.js";
 import { validarPersona } from "../middlewares/validacionesPersona.js";
 import { validarRol } from "../middlewares/autenticacion.js";
@@ -15,6 +16,7 @@ const router = Router();
 // Rutas protegidas - requieren token
 router.get("/",  traerPersonas);
 router.get("/activas",  traerPersonasActivas);
+router.get("/:tipo", traerPersonasActivasPorTipo);
 
 // Rutas administrativas - requieren token y rol admin
 router.post("/crear", verificarToken, validarRol, validarPersona, crearPersona);
