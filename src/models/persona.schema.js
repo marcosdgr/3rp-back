@@ -4,11 +4,11 @@ import Joi from "joi";
 export const personaSchema = Joi.object({
   TipoPersona: Joi.string()
     .trim()
-    .valid("Cliente", "Productor", "Tranportista")
+    .valid("Cliente", "Productor", "Transportista")
     .required()
     .messages({
       "any.only":
-        "TipoPersona debe ser uno de: Cliente, Productor,  Tranportista",
+        "TipoPersona debe ser uno de: Cliente, Productor,  Transportista",
       "any.required": "TipoPersona es requerido",
     }),
 
