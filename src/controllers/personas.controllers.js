@@ -33,6 +33,30 @@ export const traerPersonasActivas = async (req, res) => {
   }
 };
 
+// traer personas activas por tipo
+export const traerPersonasActivasPorTipo = async (req, res) => {
+  try {
+    const { tipo } = req.params; 
+
+    const query = `
+      SELECT * 
+      FROM personas 
+      WHERE IsActive = 1 AND TipoPersona = ?
+    `;
+
+    db.query(query, [tipo], (error, results) => {
+      if (error) {
+        console.error("Error al traer personas activas por tipo:", error);
+        return res.status(500).json({ message: "Error al traer personas por tipo" });
+      }
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+
 // crear una nueva persona
 export const crearPersona = async (req, res) => {
   try {
@@ -45,9 +69,10 @@ export const crearPersona = async (req, res) => {
       MailPersona,
       TelefonoPersona,
       Ubicacion,
+      idUsuarioCreador
     } = req.body;
 
-    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion) VALUES (?,?,?,?,?,?,?)`;
+    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
 
     db.query(
       nuevaPersona,
@@ -59,6 +84,7 @@ export const crearPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
+        idUsuarioCreador
       ],
       (error, results) => {
         if (error) {

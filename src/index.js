@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import db from "./config/db.js";
-
+import cors from "cors";
 // import de rutas
 import personasRoutes from "./routes/personas.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js"
@@ -20,6 +20,12 @@ db.connect((err) => {
 });
 // inicializo express
 const app = express();
+
+//configuro cors
+app.use(cors({
+  origin: "http://localhost:5174", // URL de tu frontend
+  credentials: true
+}));
 
 // configuracion del puerto
 const PORT = process.env.PORT || 3000;

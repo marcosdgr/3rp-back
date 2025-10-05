@@ -5,6 +5,7 @@ import {
   crearPersona,
   traerPersonas,
   traerPersonasActivas,
+  traerPersonasActivasPorTipo,
 } from "../controllers/personas.controllers.js";
 import {
 
@@ -22,6 +23,7 @@ router.post("/crear", validarPersona, crearPersona);
 
 router.get("/", traerPersonas);
 router.get("/activas", traerPersonasActivas);
+router.get("/:tipo", traerPersonasActivasPorTipo);
 
 //metodos put
 
