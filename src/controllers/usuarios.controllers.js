@@ -1,4 +1,8 @@
 import db from "../config/db.js";
+
+
+
+
 // traer todos los usuarios
 export const traerUsuarios = async (req, res) => {
   try {

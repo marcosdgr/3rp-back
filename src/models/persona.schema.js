@@ -72,5 +72,11 @@ export const personaSchema = Joi.object({
     "string.max": "Ubicacion no puede exceder 100 caracteres",
     "any.required": "Ubicacion es requerido",
   }),
+
+  idUsuarioCreador: Joi.number().integer().positive().optional().messages({
+    "number.base": "idUsuarioCreador debe ser un número",
+    "number.integer": "idUsuarioCreador debe ser un número entero",
+    "number.positive": "idUsuarioCreador debe ser un número positivo"
+  }),
 });
 

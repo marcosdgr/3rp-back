@@ -5,6 +5,7 @@ import db from "./config/db.js";
 // import de rutas
 import personasRoutes from "./routes/personas.routes.js";
 import usuariosRoutes from "./routes/usuarios.routes.js"
+import authRoutes from "./routes/auth.routes.js"
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
@@ -33,6 +34,8 @@ app.use(express.json());
 app.use("/api/personas/v1", personasRoutes);
     // usuarios
 app.use ("/api/usuarios/v1",usuariosRoutes)
+    // auth
+app.use("/api/auth/v1", authRoutes);
 
 // inicializo el servidor
 app.listen(PORT, () => {

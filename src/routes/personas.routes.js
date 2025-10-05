@@ -6,26 +6,19 @@ import {
   traerPersonas,
   traerPersonasActivas,
 } from "../controllers/personas.controllers.js";
-import {
-
-  validarPersona,
-} from "../middlewares/validacionesPersona.js";
+import { validarPersona } from "../middlewares/validacionesPersona.js";
+import { validarRol } from "../middlewares/autenticacion.js";
+import { verificarToken } from "../middlewares/authtoken.js";
 
 const router = Router();
 
-// Definir las rutas para las operaciones CRUD de personas
+// Rutas protegidas - requieren token
+router.get("/",  traerPersonas);
+router.get("/activas",  traerPersonasActivas);
 
-// metodos post
-router.post("/crear", validarPersona, crearPersona);
-
-//metodos get
-
-router.get("/", traerPersonas);
-router.get("/activas", traerPersonasActivas);
-
-//metodos put
-
-router.put("/actualizar/:idPersona", validarPersona, actualizarPersona);
-router.put("/eliminar/:idPersona", borradoLogicoPersona);
+// Rutas administrativas - requieren token y rol admin
+router.post("/crear", verificarToken, validarRol, validarPersona, crearPersona);
+router.put("/actualizar/:idPersona", verificarToken, validarRol, validarPersona, actualizarPersona);
+router.put("/eliminar/:idPersona", verificarToken, validarRol, borradoLogicoPersona);
 
 export default router;

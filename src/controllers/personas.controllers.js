@@ -47,7 +47,18 @@ export const crearPersona = async (req, res) => {
       Ubicacion,
     } = req.body;
 
-    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion) VALUES (?,?,?,?,?,?,?)`;
+    // Verifico que el usuario esté autenticado
+    if (!req.user || !req.user.idUsuario) {
+      return res.status(401).json({
+        message: "Usuario no autenticado",
+        debug: { user: req.user },
+      });
+    }
+
+    // Obtengo el ID del usuario autenticado desde el token
+    const idUsuarioCreador = req.user.idUsuario;
+
+    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
 
     db.query(
       nuevaPersona,
@@ -59,6 +70,7 @@ export const crearPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
+        idUsuarioCreador,
       ],
       (error, results) => {
         if (error) {
@@ -72,6 +84,7 @@ export const crearPersona = async (req, res) => {
       }
     );
   } catch (error) {
+    console.error("Error del servidor:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
 };
@@ -107,7 +120,10 @@ export const actualizarPersona = async (req, res) => {
       (error, results) => {
         if (error) {
           console.error("Error al actualizar persona: ", error);
-          res.status(500).json({ message: "Error al actualizar persona" });
+        }
+
+        if (results.affectedRows === 0) {
+          return res.status(404).json({ message: "Persona no encontrada" });
         }
 
         res.status(200).json({ message: "Persona actualizada exitosamente" });
