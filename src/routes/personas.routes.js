@@ -8,19 +8,26 @@ import {
   traerPersonasActivasPorTipo,
 } from "../controllers/personas.controllers.js";
 import { validarPersona } from "../middlewares/validacionesPersona.js";
-import { validarRol } from "../middlewares/autenticacion.js";
-import { verificarToken } from "../middlewares/authtoken.js";
+import { validarLogueado, validarRol } from "../middlewares/autenticacion.js";
 
 const router = Router();
 
-// Rutas protegidas - requieren token
-router.get("/",  traerPersonas);
-router.get("/activas",  traerPersonasActivas);
+// Rutas públicas
+router.get("/", traerPersonas);
+router.get("/activas", traerPersonasActivas);
 router.get("/:tipo", traerPersonasActivasPorTipo);
 
-// Rutas administrativas - requieren token y rol admin
-router.post("/crear", verificarToken, validarRol, validarPersona, crearPersona);
-router.put("/actualizar/:idPersona", verificarToken, validarRol, validarPersona, actualizarPersona);
-router.put("/eliminar/:idPersona", verificarToken, validarRol, borradoLogicoPersona);
+
+
+// Rutas de administración - requieren estar logueado Y ser admin
+router.post("/crear", validarLogueado, validarRol, validarPersona, crearPersona);
+router.put(
+  "/actualizar/:idPersona",
+  validarLogueado,
+  validarRol,
+  validarPersona,
+  actualizarPersona
+);
+router.put("/eliminar/:idPersona", validarLogueado, validarRol, borradoLogicoPersona);
 
 export default router;

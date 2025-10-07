@@ -4,16 +4,16 @@ import {
   traerUsuarios,
   traerUsuariosActivos,
 } from "../controllers/usuarios.controllers.js";
-import { verificarToken } from "../middlewares/authtoken.js";
 import { validarRol } from "../middlewares/autenticacion.js";
+
 
 const router = Router();
 
-// Rutas protegidas - requieren autenticación
+// Rutas públicas - sin autenticación
 router.get("/", traerUsuarios);
 router.get("/activos", traerUsuariosActivos);
 
-// Rutas administrativas - requieren autenticación y rol admin
-router.put("/eliminar/:idUsuario",verificarToken, validarRol, borradoLogicoUsuario);
+// Rutas de administración - sin autenticación
+router.put("/eliminar/:idUsuario", validarRol, borradoLogicoUsuario);
 
 export default router;

@@ -1,6 +1,7 @@
-// controllers/authController.js
-import jwt from "jsonwebtoken";
 import db from "../config/db.js";
+
+// Variable simple para guardar el usuario logueado (EN MEMORIA)
+let usuarioLogueado = null;
 
 export const loginUsuario = (req, res) => {
   const { MailUsuario, PasswordUsuario } = req.body;
@@ -38,25 +39,35 @@ export const loginUsuario = (req, res) => {
       return res.status(403).json({ message: "Usuario inactivo" });
     }
 
-    // 5. Comparar password 
+    // 5. Comparar password
     if (user.PasswordUsuario !== PasswordUsuario) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // 6. Crear el token
-    const payload = {
+    // 6. Guardar usuario en memoria 
+    usuarioLogueado = {
       idUsuario: user.idUsuario,
-      rol: user.RolUsuario,
+      RolUsuario: user.RolUsuario
     };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "24h",
-    });
 
     // 7. Respuesta
     res.status(200).json({
       message: "Login exitoso",
-      token,
+      usuario: {
+        id: user.idUsuario,
+        rol: user.RolUsuario
+      }
     });
   });
+};
+
+// Función para obtener el usuario logueado
+export const obtenerUsuarioLogueado = () => {
+  return usuarioLogueado;
+};
+
+// Función para logout
+export const logoutUsuario = (req, res) => {
+  usuarioLogueado = null;
+  res.status(200).json({ message: "Logout exitoso" });
 };

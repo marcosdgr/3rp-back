@@ -68,19 +68,17 @@ export const crearPersona = async (req, res) => {
       Ubicacion,
     } = req.body;
 
-    // Verifico que el usuario esté autenticado
-    if (!req.user || !req.user.idUsuario) {
-      return res.status(401).json({
-        message: "Usuario no autenticado",
-        debug: { user: req.user },
+    // Usar el ID del usuario logueado (del middleware)
+    const idUsuarioCreador = req.user?.idUsuario;
+
+    // Verificar que tenemos un usuario válido
+    if (!idUsuarioCreador) {
+      return res.status(400).json({
+        message: "Error: No se pudo obtener el ID del usuario logueado",
       });
     }
 
-    // Obtengo el ID del usuario autenticado desde el token
-    const idUsuarioCreador = req.user.idUsuario;
-
     // Proceder directamente a insertar
-
     const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
 
     db.query(
@@ -98,6 +96,8 @@ export const crearPersona = async (req, res) => {
       (error, results) => {
         if (error) {
           console.error("Error al crear persona:", error);
+          console.error("Error code:", error.code);
+          console.error("Error message:", error.message);
 
           // Manejo SIMPLE de errores comunes
           if (error.code === "ER_DUP_ENTRY") {
@@ -121,7 +121,11 @@ export const crearPersona = async (req, res) => {
               .json({ message: "Los datos ya están registrados" });
           }
 
-          return res.status(500).json({ message: "Error al crear persona" });
+          return res.status(500).json({
+            message: "Error al crear persona",
+            error: error.message,
+            code: error.code,
+          });
         }
 
         res.status(201).json({
