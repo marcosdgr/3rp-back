@@ -68,7 +68,7 @@ export const crearPersona = async (req, res) => {
       Ubicacion,
     } = req.body;
 
-    // Usar el ID del usuario logueado (del middleware)
+    // Usar el ID del usuario logueado 
     const idUsuarioCreador = req.user?.idUsuario;
 
     // Verificar que tenemos un usuario válido
