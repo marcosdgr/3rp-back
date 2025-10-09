@@ -24,12 +24,12 @@ export const crearVenta = (req, res) => {
     }
 
     // Insertar en la base de datos
-    const sql = `INSERT INTO movVentas 
+    const crear = `INSERT INTO movVentas 
       (IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, idUsuario, Estado) 
       VALUES (?,?,?,?,?,?,?,?,?,'Pendiente')`;
 
     db.query(
-      sql,
+      crear,
       [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, idUsuario],
       (error, results) => {
         if (error) {
@@ -40,6 +40,63 @@ export const crearVenta = (req, res) => {
         res.status(201).json({
           message: "Venta creada exitosamente",
           id: results.insertId
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Error del servidor:", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+// Actualizar una venta existente
+export const actualizarVenta = (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Traer todos los datos del body
+    const {
+      IdOperacion,
+      IdPersona,
+      IdProducto,
+      PrecioUnitario,
+      ToneladasVendidas,
+      TotalVenta,
+      FechaVenta,
+      Descripcion,
+      Estado,
+      idUsuario,
+    } = req.body;
+
+    // Verificar que el ID esté presente
+    if (!id) {
+      return res.status(400).json({
+        message: "ID de venta requerido"
+      });
+    }
+
+    // Actualizar en la base de datos
+    const actualizar = `UPDATE movVentas SET 
+      IdOperacion = ?, IdPersona = ?, IdProducto = ?, PrecioUnitario = ?, 
+      ToneladasVendidas = ?, TotalVenta = ?, FechaVenta = ?, 
+      Descripcion = ?, Estado = ?, idUsuario = ? 
+      WHERE idMovVenta = ?`;
+
+    db.query(
+      actualizar,
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, Estado, idUsuario, id],
+      (error, results) => {
+        if (error) {
+          console.error("Error al actualizar venta:", error);
+          return res.status(500).json({ message: "Error al actualizar la venta" });
+        }
+
+        if (results.affectedRows === 0) {
+          return res.status(404).json({ message: "Venta no encontrada" });
+        }
+
+        res.status(200).json({
+          message: "Venta actualizada exitosamente"
         });
       }
     );

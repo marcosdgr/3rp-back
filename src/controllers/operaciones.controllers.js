@@ -11,24 +11,22 @@ export const crearOperacion = async (req, res) => {
       idUsuario,
     } = req.body;
 
-    const sql = `
+    const crear = `
             INSERT INTO operaciones (FechaOperacion, Estado, Descripcion, idUsuario)
             VALUES (?, ?, ?, ?)
         `;
     db.query(
-      sql,
+      crear,
       [FechaOperacion, Estado, Descripcion, idUsuario],
       (error, results) => {
         if (error) {
           console.error("Error al crear operacion:", error);
           return res.status(500).json({ message: "Error al crear operacion" });
         }
-        res
-          .status(201)
-          .json({
-            message: "Operacion creada exitosamente",
-            idOperacion: results.insertId,
-          });
+        res.status(201).json({
+          message: "Operacion creada exitosamente",
+          idOperacion: results.insertId,
+        });
       }
     );
   } catch (error) {
@@ -44,7 +42,7 @@ export const obtenerOperacionCompleta = async (req, res) => {
 
     // Consulta para obtener la operación base
     const sqlOperacion = `SELECT * FROM operaciones WHERE idOperacion = ?`;
-    
+
     db.query(sqlOperacion, [idOperacion], (error, operacion) => {
       if (error) {
         console.error("Error al buscar operación:", error);
@@ -64,10 +62,15 @@ export const obtenerOperacionCompleta = async (req, res) => {
       db.query(sqlCompras, [idOperacion], (errorC, compras) => {
         db.query(sqlVentas, [idOperacion], (errorV, ventas) => {
           db.query(sqlTransportes, [idOperacion], (errorT, transportes) => {
-            
             if (errorC || errorV || errorT) {
-              console.error("Error al obtener movimientos:", { errorC, errorV, errorT });
-              return res.status(500).json({ message: "Error al obtener movimientos" });
+              console.error("Error al obtener movimientos:", {
+                errorC,
+                errorV,
+                errorT,
+              });
+              return res
+                .status(500)
+                .json({ message: "Error al obtener movimientos" });
             }
 
             // Respuesta completa
@@ -76,13 +79,13 @@ export const obtenerOperacionCompleta = async (req, res) => {
               movimientos: {
                 compras: compras || [],
                 ventas: ventas || [],
-                transportes: transportes || []
+                transportes: transportes || [],
               },
               resumen: {
                 totalCompras: compras?.length || 0,
                 totalVentas: ventas?.length || 0,
-                totalTransportes: transportes?.length || 0
-              }
+                totalTransportes: transportes?.length || 0,
+              },
             });
           });
         });

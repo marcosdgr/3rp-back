@@ -1,9 +1,11 @@
 import { Router } from "express";
 
-import { crearCompra } from "../controllers/movCompras.controllers.js";
+import { crearCompra, actualizarCompra } from "../controllers/movCompras.controllers.js";
 
 const router = Router();
-// posts para crear compra
+// POST - Crear compra
 router.post("/crear", crearCompra);
+// PUT - Actualizar compra
+router.put("/actualizar/:id", actualizarCompra);
 
 export default router;

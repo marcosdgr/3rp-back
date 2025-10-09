@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { crearTransporte } from "../controllers/movTransporte.controllers.js";
+import { crearTransporte, actualizarTransporte } from "../controllers/movTransporte.controllers.js";
 
 const router = Router();
-// post para crear transporte
+// POST - Crear transporte
 router.post("/crear", crearTransporte);
+// PUT - Actualizar transporte
+router.put("/actualizar/:id", actualizarTransporte);
 export default router;

@@ -1,10 +1,12 @@
 import { Router } from "express";
 
-import { crearVenta } from "../controllers/movVentas.controllers.js";
+import { crearVenta, actualizarVenta } from "../controllers/movVentas.controllers.js";
 
 const router = Router();
 
-// posts para crear venta
+// POST - Crear venta
 router.post("/crear", crearVenta);
+// PUT - Actualizar venta
+router.put("/actualizar/:id", actualizarVenta);
 
 export default router;
