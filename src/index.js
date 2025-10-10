@@ -22,10 +22,7 @@ db.connect((err) => {
 const app = express();
 
 //configuro cors
-app.use(cors({
-  origin: "http://localhost:5174", // URL de tu frontend
-  credentials: true
-}));
+app.use(cors());
 
 // configuracion del puerto
 const PORT = process.env.PORT || 3000;
