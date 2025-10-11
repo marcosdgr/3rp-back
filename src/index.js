@@ -4,7 +4,12 @@ import db from "./config/db.js";
 import cors from "cors";
 // import de rutas
 import personasRoutes from "./routes/personas.routes.js";
-import usuariosRoutes from "./routes/usuarios.routes.js"
+import usuariosRoutes from "./routes/usuarios.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import operacionRoutes from "./routes/operaciones.routes.js";
+import comprasRoutes from "./routes/movCompras.routes.js";
+import ventasRoutes from "./routes/movVentas.routes.js";
+import transportesRoutes from "./routes/movTransporte.routes.js";
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
@@ -32,10 +37,21 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // rutas
-     //personas
+//personas
 app.use("/api/personas/v1", personasRoutes);
-    // usuarios
-app.use ("/api/usuarios/v1",usuariosRoutes)
+// usuarios
+app.use("/api/usuarios/v1", usuariosRoutes);
+// auth
+app.use("/api/auth/v1", authRoutes);
+
+//operaciones
+app.use("/api/operaciones/v1", operacionRoutes);
+// compras
+app.use("/api/compras/v1", comprasRoutes);
+// ventas
+app.use("/api/ventas/v1", ventasRoutes);
+// transportes
+app.use("/api/transportes/v1", transportesRoutes);
 
 // inicializo el servidor
 app.listen(PORT, () => {

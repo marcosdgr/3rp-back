@@ -1,18 +1,19 @@
 import { Router } from "express";
-import { borradoLogicoUsuario, traerUsuarios, traerUsuariosActivos } from "../controllers/usuarios.controllers.js";
+import {
+  borradoLogicoUsuario,
+  traerUsuarios,
+  traerUsuariosActivos,
+} from "../controllers/usuarios.controllers.js";
+import { validarLogueado, validarRol } from "../middlewares/autenticacion.js";
+
 
 const router = Router();
 
-// Inicalizo todas rutas para usuarios
-
-// metodos GET
+// Rutas públicas - 
 router.get("/", traerUsuarios);
-router.get("/activos", traerUsuariosActivos)
+router.get("/activos", traerUsuariosActivos);
 
-// metodos PUT
-
-router.put ("/eliminar/:idUsuario", borradoLogicoUsuario)
-
-
+// Rutas de administración - 
+router.put("/eliminar/:idUsuario", validarLogueado, validarRol, borradoLogicoUsuario);
 
 export default router;

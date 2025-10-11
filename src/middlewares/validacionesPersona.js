@@ -1,7 +1,8 @@
 import { personaSchema } from "../models/persona.schema.js";
 
-// Middleware para validar datos al crear una persona
+// Middleware SIMPLE para validar datos
 export const validarPersona = (req, res, next) => {
+  // Solo validar la estructura con Joi
   const { error } = personaSchema.validate(req.body);
 
   if (error) {
@@ -16,5 +17,6 @@ export const validarPersona = (req, res, next) => {
     });
   }
 
+  // Si está bien, continuar
   next();
 };
