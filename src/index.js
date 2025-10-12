@@ -10,6 +10,7 @@ import operacionRoutes from "./routes/operaciones.routes.js";
 import comprasRoutes from "./routes/movCompras.routes.js";
 import ventasRoutes from "./routes/movVentas.routes.js";
 import transportesRoutes from "./routes/movTransporte.routes.js";
+import productosRoutes from "./routes/pruductos.routes.js";
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
@@ -49,6 +50,9 @@ app.use("/api/compras/v1", comprasRoutes);
 app.use("/api/ventas/v1", ventasRoutes);
 // transportes
 app.use("/api/transportes/v1", transportesRoutes);
+
+// productos
+app.use("/api/productos/v1", productosRoutes);
 
 // inicializo el servidor
 app.listen(PORT, () => {
