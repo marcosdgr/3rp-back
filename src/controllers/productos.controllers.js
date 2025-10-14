@@ -108,6 +108,7 @@ export const borradoLogicoProducto = async (req, res) => {
 
 export const activarProducto = async (req, res) => {
   try {
+    // se realiza un update para cambiar el estado de IsActive a 1
     const { idProducto } = req.params;
     const activar = `UPDATE PRODUCTOS SET IsActive = 1 WHERE idProducto = ?`;
     db.query(activar, [idProducto], (error, results) => {
