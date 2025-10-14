@@ -65,8 +65,9 @@ export const crearPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion,
+      Ubicacion
     } = req.body;
+
 
     // Usar el ID del usuario logueado 
     const idUsuarioCreador = req.user?.idUsuario;
@@ -91,7 +92,7 @@ export const crearPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
-        idUsuarioCreador,
+        idUsuarioCreador
       ],
       (error, results) => {
         if (error) {

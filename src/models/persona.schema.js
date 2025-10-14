@@ -8,7 +8,7 @@ export const personaSchema = Joi.object({
     .required()
     .messages({
       "any.only":
-        "TipoPersona debe ser uno de: Cliente, Productor,  Transportista",
+        "TipoPersona debe ser uno de: Cliente, Productor,  Tranportista",
       "any.required": "TipoPersona es requerido",
     }),
 
@@ -71,12 +71,6 @@ export const personaSchema = Joi.object({
     "string.min": "Ubicacion debe tener al menos 2 caracteres",
     "string.max": "Ubicacion no puede exceder 100 caracteres",
     "any.required": "Ubicacion es requerido",
-  }),
-
-  idUsuarioCreador: Joi.number().integer().positive().optional().messages({
-    "number.base": "idUsuarioCreador debe ser un número",
-    "number.integer": "idUsuarioCreador debe ser un número entero",
-    "number.positive": "idUsuarioCreador debe ser un número positivo"
   }),
 });
 
