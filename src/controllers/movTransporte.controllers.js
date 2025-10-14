@@ -20,7 +20,8 @@ export const crearTransporte = (req, res) => {
     // Verificar campos obligatorios
     if (!IdOperacion || !IdPersona || !idUsuario) {
       return res.status(400).json({
-        message: "Faltan campos obligatorios: IdOperacion, IdPersona, idUsuario"
+        message:
+          "Faltan campos obligatorios: IdOperacion, IdPersona, idUsuario",
       });
     }
 
@@ -31,16 +32,30 @@ export const crearTransporte = (req, res) => {
 
     db.query(
       crear,
-      [IdOperacion, IdPersona, Origen, Destino, Kilometros, PrecioXKm, TotalViaje, FechaTransporte, Descripcion, NombreChofer, idUsuario],
+      [
+        IdOperacion,
+        IdPersona,
+        Origen,
+        Destino,
+        Kilometros,
+        PrecioXKm,
+        TotalViaje,
+        FechaTransporte,
+        Descripcion,
+        NombreChofer,
+        idUsuario,
+      ],
       (error, results) => {
         if (error) {
           console.error("Error al crear transporte:", error);
-          return res.status(500).json({ message: "Error al crear el transporte" });
+          return res
+            .status(500)
+            .json({ message: "Error al crear el transporte" });
         }
 
         res.status(201).json({
           message: "Transporte creado exitosamente",
-          id: results.insertId
+          id: results.insertId,
         });
       }
     );
@@ -54,7 +69,7 @@ export const crearTransporte = (req, res) => {
 export const actualizarTransporte = (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Traer todos los datos del body
     const {
       IdOperacion,
@@ -74,7 +89,7 @@ export const actualizarTransporte = (req, res) => {
     // Verificar que el ID esté presente
     if (!id) {
       return res.status(400).json({
-        message: "ID de transporte requerido"
+        message: "ID de transporte requerido",
       });
     }
 
@@ -87,11 +102,27 @@ export const actualizarTransporte = (req, res) => {
 
     db.query(
       actualizar,
-      [IdOperacion, IdPersona, Origen, Destino, Kilometros, PrecioXKm, TotalViaje, FechaTransporte, Descripcion, NombreChofer, Estado, idUsuario, id],
+      [
+        IdOperacion,
+        IdPersona,
+        Origen,
+        Destino,
+        Kilometros,
+        PrecioXKm,
+        TotalViaje,
+        FechaTransporte,
+        Descripcion,
+        NombreChofer,
+        Estado,
+        idUsuario,
+        id,
+      ],
       (error, results) => {
         if (error) {
           console.error("Error al actualizar transporte:", error);
-          return res.status(500).json({ message: "Error al actualizar el transporte" });
+          return res
+            .status(500)
+            .json({ message: "Error al actualizar el transporte" });
         }
 
         if (results.affectedRows === 0) {
@@ -99,7 +130,7 @@ export const actualizarTransporte = (req, res) => {
         }
 
         res.status(200).json({
-          message: "Transporte actualizado exitosamente"
+          message: "Transporte actualizado exitosamente",
         });
       }
     );
