@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  activarPersona,
   actualizarPersona,
   borradoLogicoPersona,
   crearPersona,
@@ -17,10 +18,14 @@ router.get("/", traerPersonas);
 router.get("/activas", traerPersonasActivas);
 router.get("/:tipo", traerPersonasActivasPorTipo);
 
-
-
 // Rutas de administración - requieren estar logueado Y ser admin
-router.post("/crear", validarLogueado, validarRol, validarPersona, crearPersona);
+router.post(
+  "/crear",
+  validarLogueado,
+  validarRol,
+  validarPersona,
+  crearPersona
+);
 router.put(
   "/actualizar/:idPersona",
   validarLogueado,
@@ -28,6 +33,12 @@ router.put(
   validarPersona,
   actualizarPersona
 );
-router.put("/eliminar/:idPersona", validarLogueado, validarRol, borradoLogicoPersona);
+router.put(
+  "/eliminar/:idPersona",
+  validarLogueado,
+  validarRol,
+  borradoLogicoPersona
+);
+router.put("/activar/:idPersona", activarPersona);
 
 export default router;

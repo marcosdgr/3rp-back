@@ -1,8 +1,5 @@
 import db from "../config/db.js";
 
-
-
-
 // traer todos los usuarios
 export const traerUsuarios = async (req, res) => {
   try {
@@ -35,14 +32,31 @@ export const traerUsuariosActivos = async (req, res) => {
   }
 };
 
-
-
 // borrado logico de un usuario
 export const borradoLogicoUsuario = async (req, res) => {
   try {
     const { idUsuario } = req.params;
     const borrarUsuario = `UPDATE USUARIOS SET IsActive = 0 WHERE idUsuario = ?`;
     db.query(borrarUsuario, [idUsuario], (error, results) => {
+      if (error) {
+        console.error("Error al eliminar usuario: ", error);
+        return res.status(500).json({ message: "Error al eliminar usuario" });
+      }
+    });
+    res.status(200).json({ message: "Usuario eliminado exitosamente" });
+  } catch (error) {
+    console.error("error del servidor: ", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
+// activar usuario
+
+export const activarUsuario = async (req, res) => {
+  try {
+    const { idUsuario } = req.params;
+    const activar = `UPDATE USUARIOS SET IsActive = 0 WHERE idUsuario = ?`;
+    db.query(activar, [idUsuario], (error, results) => {
       if (error) {
         console.error("Error al eliminar usuario: ", error);
         return res.status(500).json({ message: "Error al eliminar usuario" });

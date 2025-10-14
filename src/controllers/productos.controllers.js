@@ -102,3 +102,23 @@ export const borradoLogicoProducto = async (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 };
+
+
+// activar producto
+
+export const activarProducto = async (req, res) => {
+  try {
+    const { idProducto } = req.params;
+    const activar = `UPDATE PRODUCTOS SET IsActive = 1 WHERE idProducto = ?`;
+    db.query(activar, [idProducto], (error, results) => {
+      if (error) {
+        console.error("Error al eliminar producto: ", error);
+        return res.status(500).json({ message: "Error al activar producto" });
+      }
+      res.status(200).json({ message: "Producto activado exitosamente" });
+    });
+  } catch (error) {
+    console.error("error del servidor: ", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};

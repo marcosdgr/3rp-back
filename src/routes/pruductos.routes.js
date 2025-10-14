@@ -6,7 +6,8 @@ import {
   crearProducto,
   actualizarProducto,
   borradoLogicoProducto,
-} from "../controllers/productos.controllers";
+  activarProducto,
+} from "../controllers/productos.controllers.js"
 
 const router = Router();
 
@@ -16,10 +17,11 @@ router.get("/productos", traerProductos);
 router.get("/productos/activos", traerProductosActivos);
 
 // POST
-router.post("/productos", crearProducto);
+router.post("/crear", crearProducto);
 
 // PUT
-router.put("/productos/:idProducto", actualizarProducto);
-router.put("/productos/:idProducto", borradoLogicoProducto);
+router.put("/actualizar/:idProducto", actualizarProducto);
+router.put("/eliminar/:idProducto", borradoLogicoProducto);
+router.put("/activar/:idProducto", activarProducto)
 
 export default router;

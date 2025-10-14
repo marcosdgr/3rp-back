@@ -229,3 +229,22 @@ export const borradoLogicoPersona = async (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 };
+
+// activar persona
+
+export const activarPersona = async (req, res) => {
+  try {
+    const { idPersona } = req.params;
+    const activar = `UPDATE PERSONAS SET IsActive = 1 WHERE idPersona = ?`;
+    db.query(activar, [idPersona], (error, results) => {
+      if (error) {
+        console.error("Error al eliminar persona: ", error);
+        return res.status(500).json({ message: "Error al activar persona" });
+      }
+    });
+    res.status(200).json({ message: "Persona activada exitosamente" });
+  } catch (error) {
+    console.error("error del servidor: ", error);
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
