@@ -3,8 +3,10 @@ import {
   crearOperacion, 
   obtenerOperacionCompleta,
   obtenerTodasLasOperaciones,
-  obtenerOperacionesFiltradas  // ✅ Agregar esta importación
+  obtenerOperacionesFiltradas ,
+   // ✅ Agregar esta importación
 } from "../controllers/operaciones.controllers.js"
+import { validarLogueado } from "../middlewares/autenticacion.js";
 
 const router = Router();
 
@@ -18,6 +20,6 @@ router.get("/filtradas", obtenerOperacionesFiltradas);
 router.get("/:idOperacion/completa", obtenerOperacionCompleta);
 
 // POST - Crear operación
-router.post("/crear", crearOperacion);
+router.post("/crear", validarLogueado ,crearOperacion);
 
 export default router;

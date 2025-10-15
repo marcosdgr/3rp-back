@@ -1,19 +1,18 @@
 import db from "../config/db.js";
+import bcrypt from "bcryptjs";
 
-// Variable simple para guardar el usuario logueado (EN MEMORIA)
 let usuarioLogueado = null;
 
-export const loginUsuario = (req, res) => {
+// ==============================
+// 🔐 LOGIN CON BCRYPT
+// ==============================
+export const loginUsuario = async (req, res) => {
   const { MailUsuario, PasswordUsuario } = req.body;
 
-  // 1. Validar campos
   if (!MailUsuario || !PasswordUsuario) {
-    return res
-      .status(400)
-      .json({ message: "El email y la contraseña son requeridos" });
+    return res.status(400).json({ message: "El email y la contraseña son requeridos" });
   }
 
-  // 2. Buscar usuario en la base
   const sql = `
     SELECT idUsuario, RolUsuario, PasswordUsuario, IsActive
     FROM usuarios
@@ -21,52 +20,45 @@ export const loginUsuario = (req, res) => {
     LIMIT 1
   `;
 
-  db.query(sql, [MailUsuario], (error, results) => {
+  db.query(sql, [MailUsuario], async (error, results) => {
     if (error) {
       console.error("Error al buscar usuario:", error);
       return res.status(500).json({ message: "Error al buscar usuario" });
     }
 
-    // 3. No existe
     if (!results || results.length === 0) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
     const user = results[0];
 
-    // 4. Usuario inactivo
     if (user.IsActive !== 1) {
       return res.status(403).json({ message: "Usuario inactivo" });
     }
 
-    // 5. Comparar password
-    if (user.PasswordUsuario !== PasswordUsuario) {
+    // 🔹 Comparar contraseñas con bcrypt
+    const esValida = await bcrypt.compare(PasswordUsuario, user.PasswordUsuario);
+    if (!esValida) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // 6. Guardar usuario en memoria 
+    // Guardar usuario en memoria
     usuarioLogueado = {
       idUsuario: user.idUsuario,
-      RolUsuario: user.RolUsuario
+      RolUsuario: user.RolUsuario,
     };
 
-    // 7. Respuesta
-    res.status(200).json({
+    return res.status(200).json({
       message: "Login exitoso",
-      usuario: {
-        id: user.idUsuario,
-        rol: user.RolUsuario
-      }
+      usuario: usuarioLogueado,
     });
   });
 };
 
-// Función para obtener el usuario logueado
-export const obtenerUsuarioLogueado = () => {
-  return usuarioLogueado;
-};
+// Obtener usuario logueado
+export const obtenerUsuarioLogueado = () => usuarioLogueado;
 
-// Función para logout
+// Logout
 export const logoutUsuario = (req, res) => {
   usuarioLogueado = null;
   res.status(200).json({ message: "Logout exitoso" });
