@@ -1,9 +1,10 @@
 import { Router } from "express"
 import { 
-  crearOperacion, 
+  crearOperacion,
+  actualizarOperacion,
   obtenerOperacionCompleta,
   obtenerTodasLasOperaciones,
-  obtenerOperacionesFiltradas  // ✅ Agregar esta importación
+  obtenerOperacionesFiltradas
 } from "../controllers/operaciones.controllers.js"
 
 const router = Router();
@@ -19,5 +20,8 @@ router.get("/:idOperacion/completa", obtenerOperacionCompleta);
 
 // POST - Crear operación
 router.post("/crear", crearOperacion);
+
+// PUT - Actualizar operación
+router.put("/actualizar/:idOperacion", actualizarOperacion);
 
 export default router;

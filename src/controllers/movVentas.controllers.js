@@ -3,6 +3,13 @@ import db from "../config/db.js";
 
 export const crearVenta = (req, res) => {
   try {
+    // Verificar que req.body exista
+    if (!req.body) {
+      return res.status(400).json({
+        message: "Body de la petición vacío. Verificá que estés enviando Content-Type: application/json"
+      });
+    }
+
     // Traer todos los datos del body
     const {
       IdOperacion,
@@ -10,27 +17,29 @@ export const crearVenta = (req, res) => {
       IdProducto,
       PrecioUnitario,
       ToneladasVendidas,
-      TotalVenta,
       FechaVenta,
       Descripcion,
       idUsuario,
     } = req.body;
 
     // Verificar campos obligatorios
-    if (!IdOperacion || !IdPersona || !IdProducto || !idUsuario) {
+    if (!IdOperacion || !IdPersona || !IdProducto || !idUsuario || !PrecioUnitario || !ToneladasVendidas) {
       return res.status(400).json({
-        message: "Faltan campos obligatorios: IdOperacion, IdPersona, IdProducto, idUsuario"
+        message: "Faltan campos obligatorios: IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, idUsuario"
       });
     }
 
-    // Insertar en la base de datos
+    // CALCULAR TOTAL VENTA = PrecioUnitario * ToneladasVendidas
+    const totalVenta = Number(PrecioUnitario) * Number(ToneladasVendidas);
+
+    // Insertar en la base de datos con Estado = 'Pendiente' por defecto
     const crear = `INSERT INTO movVentas 
       (IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, idUsuario, Estado) 
       VALUES (?,?,?,?,?,?,?,?,?,'Pendiente')`;
 
     db.query(
       crear,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, idUsuario],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, totalVenta, FechaVenta, Descripcion, idUsuario],
       (error, results) => {
         if (error) {
           console.error("Error al crear venta:", error);
@@ -39,7 +48,8 @@ export const crearVenta = (req, res) => {
 
         res.status(201).json({
           message: "Venta creada exitosamente",
-          id: results.insertId
+          id: results.insertId,
+          TotalVenta: totalVenta
         });
       }
     );
@@ -61,7 +71,6 @@ export const actualizarVenta = (req, res) => {
       IdProducto,
       PrecioUnitario,
       ToneladasVendidas,
-      TotalVenta,
       FechaVenta,
       Descripcion,
       Estado,
@@ -75,6 +84,16 @@ export const actualizarVenta = (req, res) => {
       });
     }
 
+    // Verificar campos obligatorios para el cálculo
+    if (!PrecioUnitario || !ToneladasVendidas) {
+      return res.status(400).json({
+        message: "PrecioUnitario y ToneladasVendidas son obligatorios para calcular el total"
+      });
+    }
+
+    // CALCULAR TOTAL VENTA = PrecioUnitario * ToneladasVendidas
+    const totalVenta = Number(PrecioUnitario) * Number(ToneladasVendidas);
+
     // Actualizar en la base de datos
     const actualizar = `UPDATE movVentas SET 
       IdOperacion = ?, IdPersona = ?, IdProducto = ?, PrecioUnitario = ?, 
@@ -84,7 +103,7 @@ export const actualizarVenta = (req, res) => {
 
     db.query(
       actualizar,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, Estado, idUsuario, idMovVenta],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, totalVenta, FechaVenta, Descripcion, Estado, idUsuario, idMovVenta],
       (error, results) => {
         if (error) {
           console.error("Error al actualizar venta:", error);
@@ -96,7 +115,8 @@ export const actualizarVenta = (req, res) => {
         }
 
         res.status(200).json({
-          message: "Venta actualizada exitosamente"
+          message: "Venta actualizada exitosamente",
+          TotalVenta: totalVenta
         });
       }
     );

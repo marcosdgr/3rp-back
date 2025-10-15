@@ -9,18 +9,20 @@ export const crearCompra = (req, res) => {
       IdProducto,
       PrecioUnitario,
       ToneladasCompradas,
-      TotalCompra,
       FechaCompra,
       Descripcion,
       idUsuario,
     } = req.body;
 
     // Verificar campos obligatorios
-    if (!IdOperacion || !IdPersona || !IdProducto || !idUsuario) {
+    if (!IdOperacion || !IdPersona || !IdProducto || !idUsuario || !PrecioUnitario || !ToneladasCompradas) {
       return res.status(400).json({
-        message: "Faltan campos obligatorios: IdOperacion, IdPersona, IdProducto, idUsuario"
+        message: "Faltan campos obligatorios: IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, idUsuario"
       });
     }
+
+    // CALCULAR TOTAL COMPRA = PrecioUnitario * ToneladasCompradas
+    const totalCompra = Number(PrecioUnitario) * Number(ToneladasCompradas);
 
     // Insertar en la base de datos
     const crear = `INSERT INTO movCompras 
@@ -29,7 +31,7 @@ export const crearCompra = (req, res) => {
 
     db.query(
       crear,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, TotalCompra, FechaCompra, Descripcion, idUsuario],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, totalCompra, FechaCompra, Descripcion, idUsuario],
       (error, results) => {
         if (error) {
           console.error("Error al crear compra:", error);
@@ -38,7 +40,8 @@ export const crearCompra = (req, res) => {
 
         res.status(201).json({
           message: "Compra creada exitosamente",
-          id: results.insertId
+          id: results.insertId,
+          TotalCompra: totalCompra
         });
       }
     );
@@ -60,7 +63,6 @@ export const actualizarCompra = (req, res) => {
       IdProducto,
       PrecioUnitario,
       ToneladasCompradas,
-      TotalCompra,
       FechaCompra,
       Descripcion,
       Estado,
@@ -74,6 +76,16 @@ export const actualizarCompra = (req, res) => {
       });
     }
 
+    // Verificar campos obligatorios para el cálculo
+    if (!PrecioUnitario || !ToneladasCompradas) {
+      return res.status(400).json({
+        message: "PrecioUnitario y ToneladasCompradas son obligatorios para calcular el total"
+      });
+    }
+
+    // CALCULAR TOTAL COMPRA = PrecioUnitario * ToneladasCompradas
+    const totalCompra = Number(PrecioUnitario) * Number(ToneladasCompradas);
+
     // Actualizar en la base de datos
     const actualizar = `UPDATE movCompras SET 
       IdOperacion = ?, IdPersona = ?, IdProducto = ?, PrecioUnitario = ?, 
@@ -83,7 +95,7 @@ export const actualizarCompra = (req, res) => {
 
     db.query(
       actualizar,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, TotalCompra, FechaCompra, Descripcion, Estado, idUsuario, idMovCompra],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, totalCompra, FechaCompra, Descripcion, Estado, idUsuario, idMovCompra],
       (error, results) => {
         if (error) {
           console.error("Error al actualizar compra:", error);
@@ -95,7 +107,8 @@ export const actualizarCompra = (req, res) => {
         }
 
         res.status(200).json({
-          message: "Compra actualizada exitosamente"
+          message: "Compra actualizada exitosamente",
+          TotalCompra: totalCompra
         });
       }
     );
