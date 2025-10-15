@@ -5,5 +5,5 @@ const router = Router();
 // POST - Crear transporte
 router.post("/crear", crearTransporte);
 // PUT - Actualizar transporte
-router.put("/actualizar/:id", actualizarTransporte);
+router.put("/actualizar/:idMovTransporte", actualizarTransporte);
 export default router;

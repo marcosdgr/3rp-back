@@ -52,7 +52,7 @@ export const crearVenta = (req, res) => {
 // Actualizar una venta existente
 export const actualizarVenta = (req, res) => {
   try {
-    const { id } = req.params;
+    const { idMovVenta } = req.params;
     
     // Traer todos los datos del body
     const {
@@ -69,7 +69,7 @@ export const actualizarVenta = (req, res) => {
     } = req.body;
 
     // Verificar que el ID esté presente
-    if (!id) {
+    if (!idMovVenta) {
       return res.status(400).json({
         message: "ID de venta requerido"
       });
@@ -84,7 +84,7 @@ export const actualizarVenta = (req, res) => {
 
     db.query(
       actualizar,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, Estado, idUsuario, id],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasVendidas, TotalVenta, FechaVenta, Descripcion, Estado, idUsuario, idMovVenta],
       (error, results) => {
         if (error) {
           console.error("Error al actualizar venta:", error);

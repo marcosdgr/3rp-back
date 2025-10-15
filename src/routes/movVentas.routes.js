@@ -7,6 +7,6 @@ const router = Router();
 // POST - Crear venta
 router.post("/crear", crearVenta);
 // PUT - Actualizar venta
-router.put("/actualizar/:id", actualizarVenta);
+router.put("/actualizar/:idMovVenta", actualizarVenta);
 
 export default router;

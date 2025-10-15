@@ -51,7 +51,7 @@ export const crearCompra = (req, res) => {
 // Actualizar una compra existente
 export const actualizarCompra = (req, res) => {
   try {
-    const { id } = req.params;
+    const { idMovCompra } = req.params;
     
     // Traer todos los datos del body
     const {
@@ -68,7 +68,7 @@ export const actualizarCompra = (req, res) => {
     } = req.body;
 
     // Verificar que el ID esté presente
-    if (!id) {
+    if (!idMovCompra) {
       return res.status(400).json({
         message: "ID de compra requerido"
       });
@@ -83,7 +83,7 @@ export const actualizarCompra = (req, res) => {
 
     db.query(
       actualizar,
-      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, TotalCompra, FechaCompra, Descripcion, Estado, idUsuario, id],
+      [IdOperacion, IdPersona, IdProducto, PrecioUnitario, ToneladasCompradas, TotalCompra, FechaCompra, Descripcion, Estado, idUsuario, idMovCompra],
       (error, results) => {
         if (error) {
           console.error("Error al actualizar compra:", error);
