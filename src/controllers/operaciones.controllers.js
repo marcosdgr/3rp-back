@@ -4,20 +4,28 @@ import db from "../config/db.js";
 
 export const crearOperacion = async (req, res) => {
   try {
+  
+
     const {
       FechaOperacion,
-      Estado = "Pendiente",
       Descripcion,
       idUsuario,
     } = req.body;
 
+    // Verificar campos obligatorios
+    if (!idUsuario) {
+      return res.status(400).json({
+        message: "Faltan campos obligatorios: idUsuario"
+      });
+    }
+
     const crear = `
             INSERT INTO operaciones (FechaOperacion, Estado, Descripcion, idUsuario)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, 'Pendiente', ?, ?)
         `;
     db.query(
       crear,
-      [FechaOperacion, Estado, Descripcion, idUsuario],
+      [FechaOperacion, Descripcion, idUsuario],
       (error, results) => {
         if (error) {
           console.error("Error al crear operacion:", error);
@@ -25,13 +33,70 @@ export const crearOperacion = async (req, res) => {
         }
         res.status(201).json({
           message: "Operacion creada exitosamente",
-          idOperacion: results.insertId,
+          id: results.insertId,
+          Estado: 'Pendiente'
         });
       }
     );
   } catch (error) {
     console.error("Error en el servidor:", error);
     res.status(500).json({ message: "Error en el servidor" });
+  }
+};
+
+// Actualizar una operación existente
+export const actualizarOperacion = async (req, res) => {
+  try {
+    const { idOperacion } = req.params;
+
+    // Verificar que req.body exista
+    if (!req.body) {
+      return res.status(400).json({
+        message: "Body de la petición vacío. Verificá que estés enviando Content-Type: application/json"
+      });
+    }
+
+    // Traer todos los datos del body
+    const {
+      FechaOperacion,
+      Descripcion,
+      Estado,
+      idUsuario,
+    } = req.body;
+
+    // Verificar que el ID esté presente
+    if (!idOperacion) {
+      return res.status(400).json({
+        message: "ID de operación requerido"
+      });
+    }
+
+    // Actualizar en la base de datos
+    const actualizar = `UPDATE operaciones SET 
+      FechaOperacion = ?, Descripcion = ?, Estado = ?, idUsuario = ? 
+      WHERE idOperacion = ?`;
+
+    db.query(
+      actualizar,
+      [FechaOperacion, Descripcion, Estado, idUsuario, idOperacion],
+      (error, results) => {
+        if (error) {
+          console.error("Error al actualizar operación:", error);
+          return res.status(500).json({ message: "Error al actualizar la operación" });
+        }
+
+        if (results.affectedRows === 0) {
+          return res.status(404).json({ message: "Operación no encontrada" });
+        }
+
+        res.status(200).json({
+          message: "Operación actualizada exitosamente"
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Error del servidor:", error);
+    res.status(500).json({ message: "Error del servidor" });
   }
 };
 
