@@ -65,19 +65,20 @@ export const crearPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion
+      Ubicacion,
+      idUsuarioCreador
     } = req.body;
 
 
     // Usar el ID del usuario logueado 
-    const idUsuarioCreador = req.user?.idUsuario;
+    // const idUsuarioCreador = 1;
 
     // Verificar que tenemos un usuario válido
-    if (!idUsuarioCreador) {
-      return res.status(400).json({
-        message: "Error: No se pudo obtener el ID del usuario logueado",
-      });
-    }
+    // if (!idUsuarioCreador) {
+    //   return res.status(400).json({
+    //     message: "Error: No se pudo obtener el ID del usuario logueado",
+    //   });
+    // }
 
     // Proceder directamente a insertar
     const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
