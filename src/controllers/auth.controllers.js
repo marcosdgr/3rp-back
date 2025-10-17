@@ -1,9 +1,8 @@
 import db from "../config/db.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-// Variable simple para guardar el usuario logueado (EN MEMORIA)
-let usuarioLogueado = null;
-
-export const loginUsuario = (req, res) => {
+export const loginUsuario = async (req, res) => {
   const { MailUsuario, PasswordUsuario } = req.body;
 
   // 1. Validar campos
@@ -21,7 +20,7 @@ export const loginUsuario = (req, res) => {
     LIMIT 1
   `;
 
-  db.query(sql, [MailUsuario], (error, results) => {
+  db.query(sql, [MailUsuario], async (error, results) => {
     if (error) {
       console.error("Error al buscar usuario:", error);
       return res.status(500).json({ message: "Error al buscar usuario" });
@@ -39,35 +38,32 @@ export const loginUsuario = (req, res) => {
       return res.status(403).json({ message: "Usuario inactivo" });
     }
 
-    // 5. Comparar password
-    if (user.PasswordUsuario !== PasswordUsuario) {
+    // 5. Comparar password hasheada
+    const passwordMatch = await bcrypt.compare(PasswordUsuario, user.PasswordUsuario);
+    if (!passwordMatch) {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // 6. Guardar usuario en memoria 
-    usuarioLogueado = {
+    // 6. Generar token JWT
+    const tokenPayload = {
       idUsuario: user.idUsuario,
-      RolUsuario: user.RolUsuario
+      RolUsuario: user.RolUsuario,
+      MailUsuario: MailUsuario
     };
 
-    // 7. Respuesta
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { 
+      expiresIn: '24h' // Token válido por 24 horas
+    });
+
+    // 8. Respuesta con token
     res.status(200).json({
       message: "Login exitoso",
+      token: token,
       usuario: {
         id: user.idUsuario,
-        rol: user.RolUsuario
+        rol: user.RolUsuario,
+        email: MailUsuario
       }
     });
   });
-};
-
-// Función para obtener el usuario logueado
-export const obtenerUsuarioLogueado = () => {
-  return usuarioLogueado;
-};
-
-// Función para logout
-export const logoutUsuario = (req, res) => {
-  usuarioLogueado = null;
-  res.status(200).json({ message: "Logout exitoso" });
 };

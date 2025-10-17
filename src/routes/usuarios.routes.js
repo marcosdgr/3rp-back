@@ -2,24 +2,29 @@ import { Router } from "express";
 import {
   activarUsuario,
   borradoLogicoUsuario,
+  crearUsuario,
   traerUsuarios,
   traerUsuariosActivos,
 } from "../controllers/usuarios.controllers.js";
-import { validarLogueado, validarRol } from "../middlewares/autenticacion.js";
+import { validarRol } from "../middlewares/autenticacion.js";
+import { verificarToken } from "../middlewares/authtoken.js";
 
 const router = Router();
 
-// Rutas públicas -
+// Rutas POST - Crear usuario
+router.post("/crear", crearUsuario);
+
+// Rutas GET -
 router.get("/", traerUsuarios);
 router.get("/activos", traerUsuariosActivos);
 
-// Rutas de administración -
+// Rutas de borrado y activacion - requieren token y rol admin
 router.put(
   "/eliminar/:idUsuario",
-  validarLogueado,
+  verificarToken,
   validarRol,
   borradoLogicoUsuario
 );
-router.put("/activar/:idUsuariuo", activarUsuario);
+router.put("/activar/:idUsuariuo", verificarToken, validarRol, activarUsuario);
 
 export default router;

@@ -3,7 +3,7 @@ import { loginUsuario } from "../controllers/auth.controllers.js";
 
 const router = express.Router();
 
-// Ruta para login
+// Ruta para login - Devuelve token JWT
 router.post("/login", loginUsuario);
 
 export default router;

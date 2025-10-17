@@ -11,6 +11,7 @@ import comprasRoutes from "./routes/movCompras.routes.js";
 import ventasRoutes from "./routes/movVentas.routes.js";
 import transportesRoutes from "./routes/movTransporte.routes.js";
 import productosRoutes from "./routes/productos.routes.js";
+import { validarPersona } from "./middlewares/validacionesPersona.js";
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
@@ -28,7 +29,10 @@ db.connect((err) => {
 const app = express();
 
 //configuro cors
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // URL de tu frontend
+  credentials: true
+}));
 
 // configuracion del puerto
 const PORT = process.env.PORT || 3000;
@@ -39,7 +43,7 @@ app.use(express.json());
 
 // rutas
 //personas
-app.use("/api/personas/v1", personasRoutes);
+app.use("/api/personas/v1",  personasRoutes);
 // usuarios
 app.use("/api/usuarios/v1", usuariosRoutes);
 // auth

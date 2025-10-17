@@ -9,7 +9,8 @@ import {
   traerPersonasActivasPorTipo,
 } from "../controllers/personas.controllers.js";
 import { validarPersona } from "../middlewares/validacionesPersona.js";
-import { validarLogueado, validarRol } from "../middlewares/autenticacion.js";
+import { validarRol } from "../middlewares/autenticacion.js";
+import { verificarToken } from "../middlewares/authtoken.js";
 
 const router = Router();
 
@@ -21,24 +22,24 @@ router.get("/:tipo", traerPersonasActivasPorTipo);
 // Rutas de administración - requieren estar logueado Y ser admin
 router.post(
   "/crear",
-  validarLogueado,
+  verificarToken,
   validarRol,
   validarPersona,
   crearPersona
 );
 router.put(
   "/actualizar/:idPersona",
-  validarLogueado,
+  verificarToken,
   validarRol,
   validarPersona,
   actualizarPersona
 );
 router.put(
   "/eliminar/:idPersona",
-  validarLogueado,
+  verificarToken,
   validarRol,
   borradoLogicoPersona
 );
-router.put("/activar/:idPersona", activarPersona);
+router.put("/activar/:idPersona", verificarToken, validarRol, activarPersona);
 
 export default router;
