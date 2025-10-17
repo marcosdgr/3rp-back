@@ -12,9 +12,9 @@ export const loginUsuario = async (req, res) => {
       .json({ message: "El email y la contraseña son requeridos" });
   }
 
-  // 2. Buscar usuario en la base
+  // 2. Buscar usuario en la base con datos completos
   const sql = `
-    SELECT idUsuario, RolUsuario, PasswordUsuario, IsActive
+    SELECT idUsuario, NombreUsuario, ApellidoUsuario, RolUsuario, PasswordUsuario, IsActive, MailUsuario
     FROM usuarios
     WHERE MailUsuario = ?
     LIMIT 1
@@ -44,25 +44,29 @@ export const loginUsuario = async (req, res) => {
       return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // 6. Generar token JWT
+    // 6. Generar token JWT con datos completos del usuario
     const tokenPayload = {
       idUsuario: user.idUsuario,
       RolUsuario: user.RolUsuario,
-      MailUsuario: MailUsuario
+      MailUsuario: user.MailUsuario,
+      NombreUsuario: user.NombreUsuario,
+      ApellidoUsuario: user.ApellidoUsuario
     };
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { 
       expiresIn: '24h' // Token válido por 24 horas
     });
 
-    // 8. Respuesta con token
+    // 7. Respuesta con token y datos completos del usuario
     res.status(200).json({
       message: "Login exitoso",
       token: token,
       usuario: {
         id: user.idUsuario,
-        rol: user.RolUsuario,
-        email: MailUsuario
+        nombre: user.NombreUsuario,
+        apellido: user.ApellidoUsuario,
+        email: user.MailUsuario,
+        rol: user.RolUsuario
       }
     });
   });
