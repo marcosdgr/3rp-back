@@ -69,18 +69,10 @@ export const crearPersona = async (req, res) => {
     } = req.body;
 
 
-    // Usar el ID del usuario logueado 
-    const idUsuarioCreador = req.user?.idUsuario;
-
-    // Verificar que tenemos un usuario válido
-    if (!idUsuarioCreador) {
-      return res.status(400).json({
-        message: "Error: No se pudo obtener el ID del usuario logueado",
-      });
-    }
+  
 
     // Proceder directamente a insertar
-    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
+    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion ) VALUES (?,?,?,?,?,?,?)`;
 
     db.query(
       nuevaPersona,
@@ -91,8 +83,8 @@ export const crearPersona = async (req, res) => {
         DNI,
         MailPersona,
         TelefonoPersona,
-        Ubicacion,
-        idUsuarioCreador
+        Ubicacion
+      
       ],
       (error, results) => {
         if (error) {
@@ -153,7 +145,7 @@ export const actualizarPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion,
+      Ubicacion
     } = req.body;
 
     const actualizarPersona = `UPDATE PERSONAS SET TipoPersona = ?, NombrePersona = ?, ApellidoPersona = ?, DNI = ?, MailPersona = ?, TelefonoPersona = ?, Ubicacion = ? WHERE idPersona = ?`;
@@ -167,7 +159,7 @@ export const actualizarPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
-        idPersona,
+        idPersona
       ],
       (error, results) => {
         if (error) {
