@@ -69,18 +69,9 @@ export const crearPersona = async (req, res) => {
     } = req.body;
 
 
-    // Usar el ID del usuario logueado 
-    const idUsuarioCreador = req.user?.idUsuario;
-
-    // Verificar que tenemos un usuario válido
-    if (!idUsuarioCreador) {
-      return res.status(400).json({
-        message: "Error: No se pudo obtener el ID del usuario logueado",
-      });
-    }
 
     // Proceder directamente a insertar
-    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion, idUsuarioCreador) VALUES (?,?,?,?,?,?,?,?)`;
+    const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion ) VALUES (?,?,?,?,?,?,?)`;
 
     db.query(
       nuevaPersona,
@@ -92,7 +83,7 @@ export const crearPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
-        idUsuarioCreador
+
       ],
       (error, results) => {
         if (error) {
@@ -153,7 +144,7 @@ export const actualizarPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion,
+      Ubicacion
     } = req.body;
 
     const actualizarPersona = `UPDATE PERSONAS SET TipoPersona = ?, NombrePersona = ?, ApellidoPersona = ?, DNI = ?, MailPersona = ?, TelefonoPersona = ?, Ubicacion = ? WHERE idPersona = ?`;
@@ -167,7 +158,7 @@ export const actualizarPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
-        idPersona,
+        idPersona
       ],
       (error, results) => {
         if (error) {
@@ -217,20 +208,29 @@ export const actualizarPersona = async (req, res) => {
 export const borradoLogicoPersona = async (req, res) => {
   try {
     const { idPersona } = req.params;
-    const borradoLogico = `UPDATE PERSONAS SET IsActive = 0 WHERE idPersona = ?`;
-    db.query(borradoLogico, [idPersona], (error, results) => {
+    const query = `UPDATE PERSONAS SET IsActive = 0 WHERE idPersona = ?`;
+
+    db.query(query, [idPersona], (error, results) => {
       if (error) {
-        console.error("Error al eliminar persona: ", error);
+        console.error("Error al eliminar persona:", error);
         return res.status(500).json({ message: "Error al eliminar persona" });
       }
+
+      // Si no se encontró la persona
+      if (results.affectedRows === 0) {
+        return res
+          .status(404)
+          .json({ message: "No se encontró la persona especificada" });
+      }
+
+      // Respuesta exitosa solo si la query terminó bien
+      res.status(200).json({ message: "Persona eliminada exitosamente" });
     });
-    res.status(200).json({ message: "Persona eliminada exitosamente" });
   } catch (error) {
-    console.error("error del servidor: ", error);
+    console.error("Error del servidor:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
 };
-
 // activar persona
 
 export const activarPersona = async (req, res) => {
