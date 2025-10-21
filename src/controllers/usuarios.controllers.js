@@ -54,6 +54,7 @@ export const crearUsuario = async (req, res) => {
 };
 
 // Actualizar usuario 
+//pendiente de realizar
 
 // traer todos los usuarios
 export const traerUsuarios = async (req, res) => {
