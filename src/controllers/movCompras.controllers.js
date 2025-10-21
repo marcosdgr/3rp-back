@@ -117,3 +117,28 @@ export const actualizarCompra = (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 };
+
+// Obtener una compra por su ID
+export const traerCompraPorId = (req, res) => {
+  const { idMovCompra } = req.params;
+
+  if (!idMovCompra) {
+    return res.status(400).json({ message: "ID de compra requerido" });
+  }
+
+  const query = `SELECT * FROM movCompras WHERE idMovCompra = ?`;
+
+  db.query(query, [idMovCompra], (error, results) => {
+    if (error) {
+      console.error("Error al obtener la compra:", error);
+      return res.status(500).json({ message: "Error al obtener la compra" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Compra no encontrada" });
+    }
+
+    res.status(200).json(results[0]);
+  });
+};
+

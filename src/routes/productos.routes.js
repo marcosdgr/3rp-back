@@ -7,14 +7,16 @@ import {
   actualizarProducto,
   borradoLogicoProducto,
   activarProducto,
+  traerProductosActivosPorId,
 } from "../controllers/productos.controllers.js"
 
 const router = Router();
 
 // Rutas para productos
 // GET
-router.get("/productos", traerProductos);
-router.get("/productos/activos", traerProductosActivos);
+router.get("/", traerProductos);
+router.get("/activos", traerProductosActivos);
+router.get("/activos/:idProducto", traerProductosActivosPorId);
 
 // POST
 router.post("/crear", crearProducto);

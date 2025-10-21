@@ -31,6 +31,26 @@ export const traerProductosActivos = async (req, res) => {
   }
 };
 
+export const traerProductosActivosPorId = async (req, res) => {
+  try {
+    const { idProducto } = req.params;
+    const query = `SELECT * 
+      FROM PRODUCTOS 
+      WHERE IsActive = 1 AND idProducto = ?`;
+    db.query(query, [idProducto], (error, results) => {
+      if (error) {
+        console.error("Error al traer productos activos por ID:", error);
+        return res
+          .status(500)
+          .json({ message: "Error al traer productos por ID" });
+      } 
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error del servidor" });
+  }
+};
+
 // crear un producto
 export const crearProducto = async (req, res) => {
   try {
