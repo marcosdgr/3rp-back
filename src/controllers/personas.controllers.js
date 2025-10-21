@@ -65,11 +65,8 @@ export const crearPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion
+      Ubicacion,
     } = req.body;
-
-
-  
 
     // Proceder directamente a insertar
     const nuevaPersona = `INSERT INTO PERSONAS (TipoPersona, NombrePersona, ApellidoPersona, DNI, MailPersona, TelefonoPersona, Ubicacion ) VALUES (?,?,?,?,?,?,?)`;
@@ -83,8 +80,7 @@ export const crearPersona = async (req, res) => {
         DNI,
         MailPersona,
         TelefonoPersona,
-        Ubicacion
-      
+        Ubicacion,
       ],
       (error, results) => {
         if (error) {
@@ -145,7 +141,7 @@ export const actualizarPersona = async (req, res) => {
       DNI,
       MailPersona,
       TelefonoPersona,
-      Ubicacion
+      Ubicacion,
     } = req.body;
 
     const actualizarPersona = `UPDATE PERSONAS SET TipoPersona = ?, NombrePersona = ?, ApellidoPersona = ?, DNI = ?, MailPersona = ?, TelefonoPersona = ?, Ubicacion = ? WHERE idPersona = ?`;
@@ -159,7 +155,7 @@ export const actualizarPersona = async (req, res) => {
         MailPersona,
         TelefonoPersona,
         Ubicacion,
-        idPersona
+        idPersona,
       ],
       (error, results) => {
         if (error) {

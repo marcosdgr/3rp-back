@@ -11,7 +11,7 @@ import comprasRoutes from "./routes/movCompras.routes.js";
 import ventasRoutes from "./routes/movVentas.routes.js";
 import transportesRoutes from "./routes/movTransporte.routes.js";
 import productosRoutes from "./routes/productos.routes.js";
-import { validarPersona } from "./middlewares/validacionesPersona.js";
+import productoresRoutes from "./routes/cuentacte.routes.js";
 
 // inicio dotenv para llamar las variables de entorno desde el archivo .env
 dotenv.config();
@@ -60,6 +60,9 @@ app.use("/api/transportes/v1", transportesRoutes);
 
 // productos
 app.use("/api/productos/v1", productosRoutes);
+
+// productores
+app.use("/api/productores/v1/cuentacte", productoresRoutes);
 
 // inicializo el servidor
 app.listen(PORT, () => {

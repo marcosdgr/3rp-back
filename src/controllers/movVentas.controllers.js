@@ -1,4 +1,4 @@
-// controllers/movVentas.controller.js
+
 import db from "../config/db.js";
 
 export const crearVenta = (req, res) => {
