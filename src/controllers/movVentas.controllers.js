@@ -19,7 +19,7 @@ export const crearVenta = (req, res) => {
       ToneladasVendidas,
       FechaVenta,
       Descripcion,
-      idUsuario,
+      idUsuario
     } = req.body;
 
     // Verificar campos obligatorios

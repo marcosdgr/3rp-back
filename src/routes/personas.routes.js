@@ -22,14 +22,14 @@ router.get("/:tipo", traerPersonasActivasPorTipo);
 // Rutas de administración - requieren estar logueado Y ser admin
 router.post(
   "/crear",
-  validarLogueado,
+  
   validarRol,
   validarPersona,
   crearPersona
 );
 router.put(
   "/actualizar/:idPersona",
-  validarLogueado,
+  
   validarRol,
   validarPersona,
   actualizarPersona

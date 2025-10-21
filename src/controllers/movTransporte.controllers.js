@@ -12,7 +12,7 @@ export const crearTransporte = (req, res) => {
       FechaTransporte,
       Descripcion,
       NombreChofer,
-      idUsuario,
+      idUsuario
     } = req.body;
 
     if (

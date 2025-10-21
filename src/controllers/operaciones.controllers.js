@@ -9,7 +9,7 @@ export const crearOperacion = async (req, res) => {
     const {
       FechaOperacion,
       Descripcion,
-      idUsuario,
+      idUsuario
     } = req.body;
 
     // Verificar campos obligatorios
