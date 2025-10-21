@@ -119,9 +119,39 @@ export const obtenerOperacionCompleta = async (req, res) => {
       }
 
       // Consultas para obtener todos los movimientos asociados
-      const sqlCompras = `SELECT * FROM movCompras WHERE IdOperacion = ?`;
-      const sqlVentas = `SELECT * FROM movVentas WHERE IdOperacion = ?`;
-      const sqlTransportes = `SELECT * FROM movTransportes WHERE IdOperacion = ?`;
+      const sqlCompras = `
+        SELECT 
+          mc.*,
+          p.NombrePersona AS ProductorNombre,
+          p.ApellidoPersona AS ProductorApellido,
+          pr.NombreProducto
+        FROM movCompras mc
+        LEFT JOIN personas p ON mc.IdPersona = p.idPersona
+        LEFT JOIN productos pr ON mc.IdProducto = pr.idProducto
+        WHERE mc.IdOperacion = ?
+      `;
+
+      const sqlVentas = `
+        SELECT 
+          mv.*,
+          p.NombrePersona AS ClienteNombre,
+          p.ApellidoPersona AS ClienteApellido,
+          pr.NombreProducto
+        FROM movVentas mv
+        LEFT JOIN personas p ON mv.IdPersona = p.idPersona
+        LEFT JOIN productos pr ON mv.IdProducto = pr.idProducto
+        WHERE mv.IdOperacion = ?
+      `;
+
+      const sqlTransportes = `
+        SELECT 
+          mt.*,
+          p.NombrePersona AS TransportistaNombre,
+          p.ApellidoPersona AS TransportistaApellido
+        FROM movTransportes mt
+        LEFT JOIN personas p ON mt.IdPersona = p.idPersona
+        WHERE mt.IdOperacion = ?
+      `;
 
       // Ejecutar consultas de movimientos
       db.query(sqlCompras, [idOperacion], (errorC, compras) => {

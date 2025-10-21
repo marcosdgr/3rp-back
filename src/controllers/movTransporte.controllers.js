@@ -220,3 +220,27 @@ export const actualizarTransporte = (req, res) => {
     res.status(500).json({ message: "Error del servidor" });
   }
 };
+
+// Obtener una venta por su ID
+export const traerTransportePorId = (req, res) => {
+  const { idMovTransporte } = req.params;
+
+  if (!idMovTransporte) {
+    return res.status(400).json({ message: "ID de transporte requerido" });
+  }
+
+  const query = `SELECT * FROM movTransportes WHERE idMovTransporte = ?`;
+
+  db.query(query, [idMovTransporte], (error, results) => {
+    if (error) {
+      console.error("Error al obtener el transporte:", error);
+      return res.status(500).json({ message: "Error al obtener el transporye" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Transporte no encontrado" });
+    }
+
+    res.status(200).json(results[0]);
+  });
+};
