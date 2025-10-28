@@ -1,0 +1,276 @@
+CREATE TABLE usuarios (
+  idUsuario INT AUTO_INCREMENT PRIMARY KEY,
+  NombreUsuario VARCHAR(50),
+  ApellidoUsuario VARCHAR(50),
+  DNI VARCHAR(15) NOT NULL UNIQUE,
+  PasswordUsuario VARCHAR(100),
+  MailUsuario VARCHAR(100) UNIQUE,
+  RolUsuario ENUM('Administrador', 'Vendedor'),
+  IsActive TINYINT DEFAULT 1,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+
+CREATE TABLE personas (
+  idPersona INT AUTO_INCREMENT PRIMARY KEY,
+  TipoPersona ENUM('Cliente','Productor','Transportista'),
+  NombrePersona VARCHAR(50),
+  ApellidoPersona VARCHAR(50),
+  DNI VARCHAR(15) UNIQUE,
+  MailPersona VARCHAR(100) UNIQUE,
+  TelefonoPersona VARCHAR(30) UNIQUE,
+  Ubicacion VARCHAR(150),
+  IsActive TINYINT DEFAULT 1,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+
+CREATE TABLE cajas (
+  idCaja INT AUTO_INCREMENT PRIMARY KEY,
+  TipoCaja ENUM('Efectivo','Bancaria','Billetera digital'),
+  NombreCaja VARCHAR(50),
+  SaldoCaja DECIMAL(10,2) DEFAULT 0,
+  IsActive TINYINT DEFAULT 1,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE productos (
+  idProducto INT AUTO_INCREMENT PRIMARY KEY,
+  NombreProducto VARCHAR(50),
+  Descripcion TEXT,
+  IsActive TINYINT DEFAULT 1,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE operaciones (
+  idOperacion INT AUTO_INCREMENT PRIMARY KEY,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaOperacion DATETIME,
+  Estado ENUM('Pendiente','Cancelado','Cerrado') DEFAULT 'Pendiente',
+  Descripcion TEXT,
+  idUsuario INT NOT NULL,
+  CONSTRAINT fk_operaciones_usuario
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_operaciones_idUsuario (idUsuario)
+) ENGINE=InnoDB;
+
+CREATE TABLE ctactes (
+  idCtaCte INT AUTO_INCREMENT PRIMARY KEY,
+  TipoCtaCte ENUM('ARS','USD'),
+  IdPersona INT NOT NULL,
+  IsActive TINYINT DEFAULT 1,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_ctactes_persona
+    FOREIGN KEY (IdPersona) REFERENCES personas(idPersona)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_ctactes_IdPersona (IdPersona)
+) ENGINE=InnoDB;
+
+CREATE TABLE ctacteMovimientos (
+  idCtaCteMov INT AUTO_INCREMENT PRIMARY KEY,
+  IdCtaCte INT NOT NULL,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaMov DATETIME NOT NULL,
+  TipoMov ENUM('Debe','Haber'),
+  Monto DECIMAL(10,2) NOT NULL,
+  Descripcion TEXT,
+  CONSTRAINT fk_ctactemov_ctacte
+    FOREIGN KEY (IdCtaCte) REFERENCES ctactes(idCtaCte)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_ctactemov_IdCtaCte (IdCtaCte)
+) ENGINE=InnoDB;
+
+
+CREATE TABLE movCompras (
+  idMovCompra INT AUTO_INCREMENT PRIMARY KEY,
+  ToneladasCompradas DECIMAL(10,2),
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaCompra DATETIME,
+  Estado ENUM('Pendiente','Cancelado','Cerrado') DEFAULT 'Pendiente',
+  Descripcion TEXT,
+  PrecioUnitario DECIMAL(10,2),
+  TotalCompra DECIMAL(10,2),
+  IdPersona INT NOT NULL,
+  IdOperacion INT NOT NULL,
+  IdProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  CONSTRAINT fk_movc_persona
+    FOREIGN KEY (IdPersona) REFERENCES personas(idPersona)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movc_operacion
+    FOREIGN KEY (IdOperacion) REFERENCES operaciones(idOperacion)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movc_producto
+    FOREIGN KEY (IdProducto) REFERENCES productos(idProducto)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movc_usuario
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_movc_IdOperacion (IdOperacion),
+  INDEX idx_movc_IdPersona (IdPersona),
+  INDEX idx_movc_idUsuario (idUsuario)
+) ENGINE=InnoDB;
+
+CREATE TABLE movVentas (
+  idMovVenta INT AUTO_INCREMENT PRIMARY KEY,
+  ToneladasVendidas DECIMAL(10,2),
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaVenta DATETIME,
+  Estado ENUM('Pendiente','Cancelado','Cerrado') DEFAULT 'Pendiente',
+  Descripcion TEXT,
+  PrecioUnitario DECIMAL(10,2),
+  TotalVenta DECIMAL(10,2),
+  IdPersona INT NOT NULL,
+  IdOperacion INT NOT NULL,
+  IdProducto INT NOT NULL,
+  idUsuario INT NOT NULL,
+  CONSTRAINT fk_movv_persona
+    FOREIGN KEY (IdPersona) REFERENCES personas(idPersona)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movv_operacion
+    FOREIGN KEY (IdOperacion) REFERENCES operaciones(idOperacion)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movv_producto
+    FOREIGN KEY (IdProducto) REFERENCES productos(idProducto)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movv_usuario
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_movv_IdOperacion (IdOperacion),
+  INDEX idx_movv_IdPersona (IdPersona),
+  INDEX idx_movv_idUsuario (idUsuario)
+) ENGINE=InnoDB;
+
+CREATE TABLE movTransportes (
+  idMovTransporte INT AUTO_INCREMENT PRIMARY KEY,
+  Origen VARCHAR(50),
+  Destino VARCHAR(50), 
+  DescargasToneladas decimal (10,2),
+  Kilometros INT NOT NULL,
+  PrecioXKm DECIMAL(12,2),
+  TotalViaje DECIMAL(14,2) ,
+  FechaTransporte DATETIME,
+  Estado ENUM('Pendiente','Entregado','Cancelado') DEFAULT 'Pendiente',
+  Descripcion TEXT,
+  NombreChofer VARCHAR(100),
+  IdPersona INT NOT NULL,
+  IdOperacion INT NOT NULL,
+  idUsuario INT NOT NULL,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (IdPersona) REFERENCES personas(idPersona)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (IdOperacion) REFERENCES operaciones(idOperacion)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+select * from tarifasKm;
+CREATE TABLE tarifasKm (
+  idTarifa INT AUTO_INCREMENT PRIMARY KEY,
+  Km INT NOT NULL,
+  PrecioXKm DECIMAL(12,2) NOT NULL,
+  VigenteDesde DATE NOT NULL,
+  IsActive TINYINT DEFAULT 1,
+  idUsuarioCreador INT NOT NULL,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+
+CREATE TABLE movFinancieros (
+  idMovFinanciero INT AUTO_INCREMENT PRIMARY KEY,
+  TipoMov ENUM('Pago','Cobro','Gasto'),
+  MedioPago ENUM('Efectivo','Transferencia','Cheque','Tarjeta') NOT NULL DEFAULT 'Efectivo',
+  MontoMov DECIMAL(10,2),
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaMov DATETIME,
+  EstadoMov ENUM('Pendiente','Cancelado','Cerrado'),
+  Descripcion TEXT,
+  IdPersona INT NOT NULL,
+  IdCaja INT NOT NULL,
+  IdOperacion INT NOT NULL,
+  IdMovCompra INT NULL,
+  IdMovVenta INT NULL,
+  IdMovTransporte INT NULL,
+  idUsuario INT NOT NULL,
+  CONSTRAINT fk_movf_persona
+    FOREIGN KEY (IdPersona) REFERENCES personas(idPersona)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movf_caja
+    FOREIGN KEY (IdCaja) REFERENCES cajas(idCaja)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movf_operacion
+    FOREIGN KEY (IdOperacion) REFERENCES operaciones(idOperacion)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  CONSTRAINT fk_movf_movc
+    FOREIGN KEY (IdMovCompra) REFERENCES movCompras(idMovCompra)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  CONSTRAINT fk_movf_movv
+    FOREIGN KEY (IdMovVenta) REFERENCES movVentas(idMovVenta)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  CONSTRAINT fk_movf_movt
+    FOREIGN KEY (IdMovTransporte) REFERENCES movTransportes(idMovTransporte)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  CONSTRAINT fk_movf_usuario
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_movf_IdOperacion (IdOperacion),
+  INDEX idx_movf_IdPersona (IdPersona),
+  INDEX idx_movf_idUsuario (idUsuario)
+) ENGINE=InnoDB;
+
+CREATE TABLE cheques (
+  idCheque INT AUTO_INCREMENT PRIMARY KEY,
+  NumeroCheque VARCHAR(50) NOT NULL,
+  Banco VARCHAR(100),
+  Importe DECIMAL(10,2) NOT NULL,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FechaEmision DATETIME NOT NULL,
+  FechaVencimiento DATETIME NOT NULL,
+  FechaPago DATETIME NULL,
+  EstadoCheque ENUM('Pendiente','Depositado','Rechazado','Pagado') DEFAULT 'Pendiente',
+  Descripcion TEXT,
+  IdMovFinanciero INT NOT NULL,
+  CONSTRAINT fk_cheques_movf
+    FOREIGN KEY (IdMovFinanciero) REFERENCES movFinancieros(idMovFinanciero)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_cheques_IdMovFinanciero (IdMovFinanciero)
+) ENGINE=InnoDB;
+
+CREATE TABLE auditoriaCambios (
+  idAuditoriaCambio INT AUTO_INCREMENT PRIMARY KEY,
+  FechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP,
+  Accion ENUM('Insertar','Modificar','Eliminar'),
+  TablaAfectada VARCHAR(50),
+  IdRegistro INT,
+  idUsuario INT NOT NULL,
+  ValorAnterior TEXT,
+  ValorNuevo TEXT,
+  Descripcion TEXT,
+  CONSTRAINT fk_audit_usuario
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+  INDEX idx_audit_TablaId (TablaAfectada, IdRegistro),
+  INDEX idx_audit_idUsuario (idUsuario)
+) ENGINE=InnoDB;

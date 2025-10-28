@@ -3,87 +3,85 @@ import db from "../config/db.js";
 export const cuentaCorrienteProductor = (req, res) => {
   try {
     const idPersona = Number(req.params.idPersona);
-    if (!idPersona)
+    if (!idPersona) {
       return res.status(400).json({ message: "idPersona inválido" });
+    }
 
-    // 1) Compras 
-    const sqlCompras = `
-    SELECT 
-      DATE_FORMAT(COALESCE(FechaCompra, FechaRegistro), '%Y-%m-%d') AS Fecha,
-      TotalCompra AS Compra,
-      idMovCompra
-    FROM movCompras
-    WHERE IdPersona = ?
-  `;
-
-    db.query(sqlCompras, [idPersona], (errC, compras) => {
-      if (errC) {
-        console.error("Error al buscar compras:", errC);
-        return res.status(500).json({ message: "Error al buscar compras" });
-      }
-
-      // 2) Pagos 
-      const sqlPagos = `
+    // operaciones + pagos + movimientos cuenta corriente
+    const sql = `
+      -- Operaciones (compras)
+      SELECT 
+        DATE_FORMAT(COALESCE(FechaCompra, FechaRegistro), '%Y-%m-%d') AS Fecha,
+        'Operacion' AS Tipo,
+        TotalCompra AS Monto,
+        'C' AS Origen,
+        idMovCompra AS Id
+      FROM movCompras
+      WHERE IdPersona = ?
+      
+      UNION ALL
+      
+      -- Pagos
       SELECT
         DATE_FORMAT(COALESCE(FechaMov, FechaRegistro), '%Y-%m-%d') AS Fecha,
-        MontoMov AS Pagos,
-        idMovFinanciero
+        'Pago' AS Tipo,
+        MontoMov AS Monto,
+        'P' AS Origen,
+        idMovFinanciero AS Id
       FROM movFinancieros
       WHERE IdPersona = ? AND TipoMov = 'Pago'
+      
+      UNION ALL
+      
+      -- Movimientos cuenta corriente 
+      SELECT
+        DATE_FORMAT(COALESCE(cm.FechaMov, cm.FechaRegistro), '%Y-%m-%d') AS Fecha,
+        CASE 
+          WHEN cm.TipoMov = 'Debe' THEN 'Operacion'
+          WHEN cm.TipoMov = 'Haber' THEN 'Pago'
+        END AS Tipo,
+        cm.Monto,
+        'CC' AS Origen,
+        cm.idCtaCteMov AS Id
+      FROM ctactes cc
+      INNER JOIN ctacteMovimientos cm ON cc.idCtaCte = cm.IdCtaCte
+      WHERE cc.IdPersona = ? AND cc.IsActive = 1
+      
+      ORDER BY Fecha ASC, Origen ASC, Id ASC
     `;
 
-      db.query(sqlPagos, [idPersona], (errP, pagos) => {
-        if (errP) {
-          console.error("Error al buscar pagos:", errP);
-          return res.status(500).json({ message: "Error al buscar pagos" });
-        }
+    db.query(sql, [idPersona, idPersona, idPersona], (error, results) => {
+      if (error) {
+        console.error("Error al buscar cuenta corriente:", error);
+        return res.status(500).json({ message: "Error al buscar cuenta corriente" });
+      }
 
-        // 3) Unificar formato
-        const movimientosCompra = (compras || []).map((r) => ({
-          Fecha: r.Fecha, // string 'YYYY-MM-DD'
-          Tipo: "Operación",
-          Compra: Number(r.Compra || 0),
-          Pagos: 0,
-          _orden: `C${String(r.idMovCompra || 0).padStart(10, "0")}`,
-        }));
+      if (!results || results.length === 0) {
+        return res.status(200).json([]);
+      }
 
-        const movimientosPago = (pagos || []).map((r) => ({
-          Fecha: r.Fecha, // string 'YYYY-MM-DD'
-          Tipo: "Pago",
-          Compra: 0,
-          Pagos: Number(r.Pagos || 0),
-          _orden: `P${String(r.idMovFinanciero || 0).padStart(10, "0")}`,
-        }));
-
-        let movimientos = [...movimientosCompra, ...movimientosPago];
-
-        // 4) Orden
-        movimientos.sort((a, b) => {
-          if (a.Fecha !== b.Fecha) return a.Fecha < b.Fecha ? -1 : 1; // ya es YYYY-MM-DD
-          return a._orden < b._orden ? -1 : a._orden > b._orden ? 1 : 0;
-        });
-
-        // 5) Saldo corrido
-        let saldo = 0;
-        movimientos = movimientos.map((m) => {
-          if (m.Compra > 0) saldo += m.Compra;
-          else if (m.Pagos > 0) saldo -= m.Pagos;
-
-          return {
-            Fecha: m.Fecha,
-            Tipo: m.Tipo,
-            Compra: m.Compra,
-            Pagos: m.Pagos,
-            Evolucion: Number(saldo.toFixed(2)),
-          };
-        });
-
-        // 6) Respuesta
-        return res.status(200).json(movimientos);
+      // Procesar y calcular evolución
+      let evolucion = 0;
+      const movimientos = results.map(mov => {
+        const compra = mov.Tipo === 'Operacion' ? Number(mov.Monto || 0) : 0;
+        const pago = mov.Tipo === 'Pago' ? Number(mov.Monto || 0) : 0;
+        
+        evolucion += compra - pago;
+        
+        return {
+          Fecha: mov.Fecha,
+          Tipo: mov.Tipo,
+          Compra: compra,
+          Pago: pago,
+          Evolucion: Number(evolucion.toFixed(2))
+        };
       });
+
+      return res.status(200).json(movimientos);
     });
+
   } catch (error) {
-    console.error("error del servidor: ", error);
+    console.error("Error del servidor:", error);
     res.status(500).json({ message: "Error del servidor" });
   }
 };
